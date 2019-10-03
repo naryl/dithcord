@@ -1,0 +1,9 @@
+
+* MAIN LIBRARY
+* patchouli-like modules with dependencies
+* redefinable multiple handlers
+* Use cl-cooperative for interaction with lispcord
+
+* CLI INTERFACE
+
+* TUI INTERFACE
