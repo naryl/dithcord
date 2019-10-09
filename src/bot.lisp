@@ -34,15 +34,21 @@ several registered bots you can't start more than one bot per
 lisp-system."
   (when lispcord:*client*
     (error "A bot is already running"))
-  (unwind-protect
-       (let ((bot (gethash bot-name *bots*)))
-         (setf *current-bot* bot)
-         (dolist (mod (bot-modules bot))
-           (load-module bot mod))
-         (setf lispcord:*client* (lispcord:make-bot (bot-token bot)))
-         (lispcord:connect lispcord:*client*))
-    ;; Set it back to nil if something breaks before LISPCORD:CONNECT
-    (setf *current-bot* nil)))
+  (let ((success nil))
+    (unwind-protect
+         (let ((bot (gethash bot-name *bots*)))
+           (setf lispcord:*client* (lispcord:make-bot (bot-token bot)))
+           (setf *current-bot* bot)
+           (dolist (mod (bot-modules bot))
+             (load-module bot mod))
+           (lispcord:connect lispcord:*client*)
+           (setf success t))
+      ;; Set it back to nil if something breaks before LISPCORD:CONNECT
+      (unless success
+        (setf *current-bot* nil
+              lispcord:*client* nil)
+        ))
+    success))
 
 (defun stop-bot ()
   "Stop the current bot. Modules won't be destroyed."

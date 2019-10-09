@@ -1,14 +1,20 @@
 
 (in-package dithcord)
 
+(declaim (optimize (debug 3) (safety 3) (speed 0) (size 0)))
+
 (defmacro define-handler (module-name event (&rest args) &body body)
   "Define this module's handler for EVENT."
-  (let ((module (get-module module-name)))
-    (assert module)
-    (setf (gethash event (module-handlers module))
-          `(lambda ,args
-             ,body))
-    `'(,module-name ,event)))
+  (alexandria:with-gensyms (module-g)
+    `(let ((,module-g (get-module ',module-name)))
+      (assert ,module-g)
+      ;; Remove the handler if the body is empty
+      ,@(if (null body)
+            `((remhash ,event (module-handlers ,module-g)))
+            `((setf (gethash ,event (module-handlers ,module-g))
+                     (lambda ,args
+                       ,@body))))
+      '(,module-name ,event))))
 
 ;;;; INTERNAL
 
@@ -16,7 +22,8 @@
   "Call a module's handler with data if it exists."
   (let ((handler (gethash handler-name (module-handlers module) nil)))
     (when handler
-      (apply handler data))))
+      (with-simple-restart (skip-handler "Skip processing this handler.")
+        (apply handler data)))))
 
 (defun call-handler (handler data)
   "Call handler on every module in the current bot."
@@ -29,7 +36,9 @@
 Dithcord's module handlers"
   (let ((handler-sym (alexandria:format-symbol 'dithcord.handlers "~A~A" name "-HANDLER")))
     (unless (fboundp handler-sym)
+      (v:debug :dithcord.base-handler "Registering handler ~A" handler-sym)
       (setf (symbol-function handler-sym)
             (lambda (&rest data)
+              (v:debug :dithcord.base-handler "Got Lispcord event ~A" name)
               (call-handler name data)))
       (lispcord:add-event-handler name handler-sym))))

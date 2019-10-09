@@ -1,20 +1,23 @@
 
 (in-package dithcord-user)
 
-(defvar token "asdf")
+(setf (v:repl-level) :debug)
 
+;; Modules are not loaded until the bot is started
 (define-bot echo-bot (echo)
-    :token token
-    ;; Modules are not loaded until the bot is started so we can define it after the bot
-    )
+    :token "NTYwNTk1MjYzNjYwNjIxODY0.XZ1CuQ.EGRWadit3TnQpD8z3Qw89G5k20Y")
 
-(define-module echo)
+(define-module echo ())
 
 ;; Dithcord has some special events and the rest (like :on-message-create) are the same as Lispcord's
+(define-handler echo :on-module-load ()
+  (v:debug :echo-bot "ECHO loaded!"))
+
 (define-handler echo :on-message-create (msg)
+  (v:debug :echo-bot "Got message")
   (unless (lc:botp (lc:author msg))
     (let ((cmd (string-trim " " (lispcord:remove-mention (lispcord:me) (lc:content msg)))))
-      (when (zerop (search "echo!" cmd))
+      (when (eql 0 (search "echo!" cmd))
         (lispcord:reply msg (subseq cmd 6))))))
 
 (start-bot echo-bot)

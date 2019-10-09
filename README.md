@@ -44,7 +44,7 @@ Well, both Dithcord and Lispcord have lots of it.
 Dithcord API
 ============
 
-Special handlers
+Special events
 ----------------
 
-:on-load - Called when the module is loaded into the bot, before the bot is connected, after the module's dependencies are loaded.
+:on-module-load - Called when the module is loaded into the bot, before the bot is connected, after the module's dependencies are loaded.
