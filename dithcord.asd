@@ -1,8 +1,11 @@
 
 (defsystem dithcord
-    :depends-on (:lispcord :verbose)
+    :depends-on (:alexandria :lispcord :verbose)
     :pathname "src/"
     :serial t
     :components ((:file "defpackage")
                  (:file "dev")
-                 (:file "main")))
+                 (:file "bot")
+                 (:file "handlers")
+                 (:file "module")
+                 ))
