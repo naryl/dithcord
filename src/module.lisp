@@ -1,6 +1,8 @@
 
 (in-package dithcord)
 
+#.declaim-optimize
+
 (defvar *known-modules* (make-hash-table))
 
 (defparameter *special-events*

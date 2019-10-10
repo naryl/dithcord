@@ -1,9 +1,9 @@
 
 (in-package dithcord)
 
-(defmacro p (str &rest args)
-  #+cooperative-debug `(v:debug :cl-cooperative ,str ,@args)
-  #-cooperative-debug nil)
+(defparameter declaim-optimize
+    #+debug-build (declaim (optimize (debug 3) (safety 3) (speed 0) (size 0)))
+    #-debug-build (declaim (optimize (speed 3))))
 
 (defun deliver (filename)
   (sb-ext:save-lisp-and-die filename :executable t))

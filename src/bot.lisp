@@ -1,7 +1,7 @@
 
 (in-package dithcord)
 
-(declaim (optimize (debug 3) (safety 3) (speed 0) (size 0)))
+#.declaim-optimize
 
 (defvar *bots* (make-hash-table))
 (defvar *current-bot*)

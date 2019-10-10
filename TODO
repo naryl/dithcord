@@ -1,8 +1,7 @@
 
 * MAIN LIBRARY
-* patchouli-like modules with dependencies
-* redefinable multiple handlers
-* Use cl-cooperative for interaction with lispcord
+* Unloading modules
+* Redefining a running bot should update loaded modules
 
 * CLI INTERFACE
 

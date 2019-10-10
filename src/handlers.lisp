@@ -1,7 +1,7 @@
 
 (in-package dithcord)
 
-(declaim (optimize (debug 3) (safety 3) (speed 0) (size 0)))
+#.declaim-optimize
 
 (defmacro define-handler (module-name event (&rest args) &body body)
   "Define this module's handler for EVENT."
@@ -39,6 +39,5 @@ Dithcord's module handlers"
       (v:debug :dithcord.base-handler "Registering handler ~A" handler-sym)
       (setf (symbol-function handler-sym)
             (lambda (&rest data)
-              (v:debug :dithcord.base-handler "Got Lispcord event ~A" name)
               (call-handler name data)))
       (lispcord:add-event-handler name handler-sym))))
