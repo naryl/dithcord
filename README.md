@@ -32,7 +32,7 @@ In the end it should allow you to manually control a bot account, being able to 
 How is Dithcord (the library) different fron Lispcord?
 ------------------------------------------------------
 
-The main difference is that Lispcord supports running several monolithic bots in the same lisp-system while Dithcord supports running a single modular bot. If both suit you then you should probably pick Lispcord to avoid an extra layer you don't need. Also, Dithcord is not a complete abstraction and you'll have to use Lispcord functions anyway.
+The main difference is that Lispcord supports running several monolithic bots in the same lisp-system while Dithcord supports running a single modular bot. If both suit you then you should probably pick Lispcord to avoid an extra layer you don't need. Dithcord is not a complete abstraction and you'll have to use Lispcord functions anyway.
 
 Also, Lispcord is more imperative while Dithcord is more declarative with all the define-stuff macros.
 
@@ -44,7 +44,44 @@ Well, both Dithcord and Lispcord have lots of it.
 Dithcord API
 ============
 
+Since the current code is in such a state that it probably shouldn't have been published yet this section contains very little.
+
+Example
+-------
+
+More are in the examples directory.
+
+```lisp
+(in-package dithcord-user)
+
+;; Define a bot named ECHO-BOT with one module ECHO
+;; Modules are not loaded until the bot is started
+(define-bot echo-bot (echo)
+  ;; Parameters are evaluated. You can load it from a config file e.g.
+  :token "")
+
+;; Define a module ECHO with no dependencies.
+;; Lispcord is always available without any modules.
+(define-module echo ())
+
+;; Define a handler for event :ON-MODULE-LOAD handled by the module ECHO.
+;; Dithcord has some special events and the rest (like :on-message-create) are the same as Lispcord's
+(define-handler echo :on-module-load ()
+  (v:info :echo-bot "ECHO loaded!"))
+
+;; Define another handler for :ON-MESSAGE-CREATE
+(define-handler echo :on-message-create (msg)
+  ;; This code is from Lispcord's example
+  (unless (lc:botp (lc:author msg))
+    (let ((cmd (string-trim " " (lispcord:remove-mention (lispcord:me) (lc:content msg)))))
+      (when (eql 0 (search "echo!" cmd))
+        (lispcord:reply msg (subseq cmd 6))))))
+
+;; Start the bot
+(start-bot echo-bot)
+```
+
 Special events
 ----------------
 
-:on-module-load - Called when the module is loaded into the bot, before the bot is connected, after the module's dependencies are loaded.
+`:on-module-load` - Called when the module is loaded into the bot, before the bot is connected, after the module's dependencies are loaded.
