@@ -3,7 +3,7 @@
   (:use :common-lisp)
   (:export #:define-bot #:start-bot #:stop-bot
            #:define-module #:module-slot
-           #:define-handler #:define-function
+           #:define-handler
            ))
 
 (defpackage dithcord.handlers)

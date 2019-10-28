@@ -21,10 +21,10 @@ What can it do? (AKA Roadmap)
 
 It has five components, neither of which is finished right now :o)
 
-* **Dithcord** - A library with common functions. Uses [Lispcord](https://github.com/lispcord/lispcord) for the protocol implementation. It will probably be possible to use it as a generic Discord bot framework too if you don't like Lispcord itself for some reason.
-* **Dithcord-altha** - A library for sending/receiving audio from Discord using ALSA. Unless it's implemented as a part of Lispcord, in which case we'll just use that one. Why ALSA? It's what I use. PipeWire support will be added as soon as its developers release the Pulse Audio-compatible API, in which case we'll hopefully automatically get Pulse Audio support for free. I'm not interested in implementing PA support specifically but contributions are welcome (when we have ALSA at least).
-* **Dithcord-CLI** - A command-line interface. Just to get something working and usable.
-* **Dithcord-TUI** - An ncurses-based Text User Interface. Think irssi or weechat.
+* **dithcord** - A library with common functions. Uses [Lispcord](https://github.com/lispcord/lispcord) for the protocol implementation. It will probably be possible to use it as a generic Discord bot framework too if you don't like Lispcord itself for some reason.
+* **dithcord-cli** - A command-line interface. Just to get something working and usable.
+* **dithcord-tui** - An ncurses-based Text User Interface. Think irssi or weechat.
+* **dithcord-altha** - A library for sending/receiving audio from Discord using ALSA. Unless it's implemented as a part of Lispcord, in which case we'll just use that one. Why ALSA? It's what I use. PipeWire support will be added as soon as its developers release the Pulse Audio-compatible API, in which case we'll hopefully automatically get Pulse Audio support for free. I'm not interested in implementing PA support specifically but contributions are welcome (when we have ALSA at least).
 * A GUI. Not even sure what toolkit to use yet.
 
 In the end it should allow you to manually control a bot account, being able to do as much of what a user account can do as possible with a bot account.
@@ -41,8 +41,8 @@ What's with the lisp?
 
 Well, both Dithcord and Lispcord have lots of it.
 
-Dithcord API
-============
+Dithcord (the library)
+======================
 
 Since the current code is in such a state that it probably shouldn't have been published yet this section contains very little.
 

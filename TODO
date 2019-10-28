@@ -2,7 +2,4 @@
 * MAIN LIBRARY
 * Unloading modules
 * Redefining a running bot should update loaded modules
-
-* CLI INTERFACE
-
-* TUI INTERFACE
+* Set bot's token after defining it
