@@ -9,12 +9,15 @@ Dithcord is what you may call a "non-automated bot". It's a bot mainly intended 
 Is it a self-bot?
 -----------------
 
-Self-bot is the opposite of what Dithcord is. Self-bot is an automated user account. Dithcord doesn't automate and doesn't use a user account.
+Self-bot is the opposite of what Dithcord is. Self-bot is an automated user account. Dithcord doesn't automate and doesn't use a user account. There's a way to make Dithcord introduce itself as a user account but
+
+1. You'll need my Lispcord fork for that.
+2. It's VERY likely to get your account banned.
 
 So it's more like a 3rd-party Discord client?
 ---------------------------------------------
 
-Kinda, except Discord's Terms of Service explicitly forbid implementing 3rd-party clients, so we legally can't use their User API. The main differences between bot accounts and user accounts are outlined here: (https://discordapp.com/developers/docs/topics/oauth2#bot-vs-user-accounts)
+Kinda, except Discord's Terms of Service explicitly forbid implementing 3rd-party clients, so we legally can't introduce the bot as a user account. The main differences between bot accounts and user accounts are outlined here: (https://discordapp.com/developers/docs/topics/oauth2#bot-vs-user-accounts)
 
 What can it do? (AKA Roadmap)
 -----------------------------
@@ -85,3 +88,5 @@ Special events
 ----------------
 
 `:on-module-load` - Called when the module is loaded into the bot, before the bot is connected, after the module's dependencies are loaded.
+
+`:on-module-unload` - Called when the module is unloaded from a running bot due to redefining the bot with a different set of modules.

@@ -4,10 +4,16 @@
   (:export #:define-bot #:start-bot #:stop-bot
            #:define-module #:module-slot
            #:define-handler
+
+           ;; setters
+           #:token
+
+           ;; Selfbots
+           #:get-user-token #:invalid-login-data
            ))
 
 (defpackage dithcord.handlers)
 
 (defpackage dithcord-user
-  ;; Lispcord has a nickname "lc". Use it instead of :use'ing the package.
+  ;; Use lispcord: and lc: to access Lispcord
   (:use :common-lisp :dithcord))

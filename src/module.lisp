@@ -31,6 +31,8 @@ module-specific data."
   (unless (member module-name (bot-loaded-modules bot))
     (let ((module (get-module module-name)))
       ;; Ensure dependencies are loaded first
+      (unless module
+        (error "Loading undefined module: ~A" module-name))
       (dolist (dep (module-depends module))
         (load-module bot dep))
       ;; Do module-specific initialization
@@ -39,9 +41,25 @@ module-specific data."
       ;; forward its events to Dithcord modules for each event this
       ;; module handles
       (dolist (event (alexandria:hash-table-keys (module-handlers module)))
-        (unless (member event *special-events*)
-          (ensure-lispcord-handler event)))
+        (ensure-lispcord-handler event))
       ;; Modules are ordered in the LOADED-MODULES list by
       ;; dependencies so lower-level modules' handlers are
       ;; called first.
       (alexandria:appendf (bot-loaded-modules bot) (list module-name)))))
+
+(defun unload-module (bot module-name)
+  ;; Skip unloading module if it's not loaded
+  (when (member module-name (bot-loaded-modules bot))
+    (let ((module (get-module module-name)))
+      ;; Ensure depending modules are unloaded first
+      (dolist (mod (bot-loaded-modules bot))
+        (when (member module-name (module-depends (get-module mod)))
+          (v:warn :dithcord.modules "Unloading module ~A depending on ~A"
+                  mod module-name)
+          (unload-module bot mod)))
+      ;; Do module-specific uninitialization
+      (call-module-handler module :on-module-unload nil)
+      ;; Leave Lispcord handler in place, we don't care
+      
+      ;; Remove the module from loaded modules list
+      (alexandria:deletef (bot-loaded-modules bot) module-name))))

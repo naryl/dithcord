@@ -1,5 +1,5 @@
 
 * MAIN LIBRARY
+* Set bot's token after defining it
 * Unloading modules
 * Redefining a running bot should update loaded modules
-* Set bot's token after defining it

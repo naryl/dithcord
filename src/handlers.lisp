@@ -5,16 +5,22 @@
 
 (defmacro define-handler (module-name event (&rest args) &body body)
   "Define this module's handler for EVENT."
+  (declare (type symbol module-name event))
   (alexandria:with-gensyms (module-g)
     `(let ((,module-g (get-module ',module-name)))
-      (assert ,module-g)
-      ;; Remove the handler if the body is empty
-      ,@(if (null body)
-            `((remhash ,event (module-handlers ,module-g)))
-            `((setf (gethash ,event (module-handlers ,module-g))
+       (unless ,module-g
+         (error "Module undefined: ~A" ,module-g))
+       ;; Remove the handler if the body is empty
+       ,@(if (null body)
+             `((remhash ,event (module-handlers ,module-g)))
+             `((setf (gethash ,event (module-handlers ,module-g))
                      (lambda ,args
                        ,@body))))
-      '(,module-name ,event))))
+       '(,module-name ,event)
+       ;; Defining a handler for the running bot
+       (if (and *current-bot*
+                (member ',module-name (bot-loaded-modules *current-bot*)))
+           (ensure-lispcord-handler ,event)))))
 
 ;;;; INTERNAL
 
@@ -34,10 +40,11 @@
 (defun ensure-lispcord-handler (name)
   "Ensure a handler is registered with Lispcord which will call
 Dithcord's module handlers"
-  (let ((handler-sym (alexandria:format-symbol 'dithcord.handlers "~A~A" name "-HANDLER")))
-    (unless (fboundp handler-sym)
-      (v:debug :dithcord.base-handler "Registering handler ~A" handler-sym)
-      (setf (symbol-function handler-sym)
-            (lambda (&rest data)
-              (call-handler name data)))
-      (lispcord:add-event-handler name handler-sym))))
+  (unless (member name *special-events*)
+    (let ((handler-sym (alexandria:format-symbol 'dithcord.handlers "~A~A" name "-HANDLER")))
+      (unless (fboundp handler-sym)
+        (v:debug :dithcord.handlers "Registering Lispcord handler ~A" handler-sym)
+        (setf (symbol-function handler-sym)
+              (lambda (&rest data)
+                (call-handler name data)))
+        (lispcord:add-event-handler name handler-sym)))))

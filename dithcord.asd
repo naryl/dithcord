@@ -1,11 +1,13 @@
 
 (defsystem dithcord
-  :depends-on (:alexandria
-               :verbose
+  :depends-on (:alexandria :drakma :flexi-streams
+               :verbose :jonathan
                :lispcord)
   :pathname "src/"
   :serial t
   :components ((:file "defpackage")
+               (:file "misc")
+               (:file "util")
                (:file "dev")
                (:file "bot")
                (:file "handlers")

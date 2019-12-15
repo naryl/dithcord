@@ -2,9 +2,10 @@
 (in-package dithcord-user)
 
 ;; Modules are not loaded until the bot is started
-(define-bot echo-bot (echo)
+(define-bot selfbot (echo)
   ;; Parameters are evaluated. You can load it from a config file e.g.
-  :token "NTYwNTk1MjYzNjYwNjIxODY0.XZ1CuQ.EGRWadit3TnQpD8z3Qw89G5k20Y")
+  :auth ("USERNAME" "PASSWORD")
+  :selfbot t)
 
 (define-module echo ())
 
@@ -18,4 +19,4 @@
       (when (eql 0 (search "echo!" cmd))
         (lispcord:reply msg (subseq cmd 6))))))
 
-(start-bot 'echo-bot)
+(start-bot 'selfbot)
