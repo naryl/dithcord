@@ -16,7 +16,6 @@ install:
   - curl https://raw.githubusercontent.com/luismbo/cl-travis/master/install.sh | bash
 
 script:
-  - cl -e '(ql:quickload :cl-tui)
-           (load "examples/0smoke.lisp")
-           (cl-tui.examples::start)'
+  - cl -e '(ql:quickload :dithcord)
+           (load "examples/0smoke.lisp")'
 
