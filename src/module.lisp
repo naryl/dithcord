@@ -16,10 +16,11 @@
   "Define a module. Note that modules are strictly single-instance per
 lisp-system so you're free to use global variables to store
 module-specific data."
-  (let ((module (make-module :depends depends
-                             :handlers (make-hash-table))))
-    (setf (gethash name *known-modules*) module)
-    `',name))
+  (alexandria:with-gensyms (module)
+    `(let ((,module (make-module :depends ',depends
+                                :handlers (make-hash-table))))
+       (setf (gethash ',name *known-modules*) ,module)
+       ',name)))
 
 ;;;; INTERNAL
 

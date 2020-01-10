@@ -5,11 +5,11 @@
            #:define-module #:module-slot
            #:define-handler
 
-           ;; setters
+           ;; accessors
            #:token
 
            ;; Selfbots
-           #:get-user-token #:invalid-login-data
+           #:get-user-token #:invalid-login-data #:message
            ))
 
 (defpackage dithcord.handlers)

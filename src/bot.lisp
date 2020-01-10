@@ -1,7 +1,7 @@
 
 (in-package dithcord)
 
-#.declaim-optimize
+#.dithcord::declaim-optimize
 
 (defvar *bots* (make-hash-table))
 (defvar *current-bot* nil)
@@ -15,7 +15,7 @@
 (defmacro define-bot (name (&rest modules) &key token auth selfbot)
   "Define a bot.
 NAME is only used for START-BOT and STOP-BOT.
-TOKEN is the bot's Discord token.
+TOKEN is the bot's Discord token. Token is not updated on bot redefinition!
 AUTH is a user's email and password as a pair. Use either this or TOKEN.
 SELFBOT will make it introduce itself as a user account.
 MODULES is the list of module names required for this module. If
@@ -31,25 +31,18 @@ MODULES is the list of module names required for this module. If
               (listp auth)
               (= 2 (length auth)))
          `(ensure-bot ',name (get-user-token ,@auth) ',modules ,selfbot))
-        (t (error "Use one of AUTH or TOKEN"))))
+        (t `(ensure-bot ',name nil ',modules ,selfbot))))
 
-(define-setf-expander token (bot &environment env)
-  (multiple-value-bind (temps vals new-val setter getter)
-      (get-setf-expansion bot env)
-    (declare (ignore new-val setter))
-    (alexandria:with-gensyms (store)
-      (values temps
-              vals
-              `(,store)
-              `(progn
-                 (setf (bot-token (gethash ',getter *bots*)) ,store)
-                 ,store)
-              `(bot-token ,getter)))))
+(defun token (bot)
+  (bot-token bot))
+
+(defun (setf token) (new-val bot-name)
+  (setf (bot-token (gethash bot-name *bots*)) new-val))
 
 (defun ensure-bot (name token modules selfbot)
   (if (and (gethash name *bots* nil)
            (eq (gethash name *bots*) *current-bot*))
-      (update-bot name token modules selfbot)
+      (update-bot name modules selfbot)
       (create-bot name token modules selfbot)))
 
 (defun create-bot (name token modules selfbot)
@@ -57,10 +50,9 @@ MODULES is the list of module names required for this module. If
         (setf (gethash name *bots*) bot)
         name))
 
-(defun update-bot (name token modules selfbot)
+(defun update-bot (name modules selfbot)
   (let ((bot (gethash name *bots*)))
-    (setf (bot-token bot) token)
-    (setf (bot-selfbot) selfbot)
+    (setf (bot-selfbot bot) selfbot)
     (setf (bot-modules bot) modules)
     (let ((remove-modules (set-stable-difference (bot-loaded-modules bot) modules))
           (add-modules (set-stable-difference modules (bot-loaded-modules bot))))
@@ -82,7 +74,10 @@ lisp-system."
   (let ((success nil))
     (unwind-protect
          (let ((bot (gethash bot-name *bots*)))
-           (setf lispcord:*client* (lispcord:make-bot (bot-token bot) :selfbot (bot-selfbot bot)))
+           (unless (bot-token bot)
+             (error "The bot has no token. Set it with (setf (token bot-name) ...)"))
+           (setf lispcord:*client* (lispcord:make-bot (bot-token bot)
+                                                      :selfbot (bot-selfbot bot)))
            (setf *current-bot* bot)
            (dolist (mod (bot-modules bot))
              (load-module bot mod))
@@ -95,9 +90,21 @@ lisp-system."
     success))
 
 (defun stop-bot ()
-  "Stop the current bot. Modules won't be destroyed."
-  (unless lispcord:*client*
-    (error "No bot running"))
-  (lispcord:disconnect lispcord:*client*)
-  (setf *current-bot* nil)
-  (setf lispcord:*client* nil))
+  "Stop the current bot and unloads its modules."
+  (flet ((stop-dithcord ()
+           (mapcar (lambda (mod) (unload-module *current-bot* mod))
+                   (bot-loaded-modules *current-bot*)))
+         (stop-lispcord ()
+           (lispcord:disconnect lispcord:*client*)))
+    (cond ((and lispcord:*client* *current-bot*)
+           (stop-dithcord)
+           (stop-lispcord))
+          ((or lispcord:*client* *current-bot*)
+           (v:error :dithcord "The bot is half-dead. This should never happen.")
+           (if *current-bot*
+               (stop-dithcord)
+               (stop-lispcord)))
+          (t
+           (v:error :dithcord "No bot running")))
+    (setf *current-bot* nil)
+    (setf lispcord:*client* nil)))
