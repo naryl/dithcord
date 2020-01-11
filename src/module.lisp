@@ -13,19 +13,40 @@
   handlers)
 
 (defmacro define-module (name (&rest depends))
-  "Define a module. Note that modules are strictly single-instance per
+  "Define a module. Modules are strictly single-instance per
 lisp-system so you're free to use global variables to store
 module-specific data."
-  (alexandria:with-gensyms (module)
-    `(let ((,module (make-module :depends ',depends
-                                :handlers (make-hash-table))))
+  (alexandria:with-gensyms (module new-depends old-depends)
+    `(let* ((,new-depends ',depends)
+            (,old-depends (awhen (get-module ',name) (module-depends it)))
+            (,module (make-module :depends ,new-depends
+                                  :handlers (make-handlers ',name))))
        (setf (gethash ',name *known-modules*) ,module)
+       (reload-module-deps ,old-depends ,new-depends)
        ',name)))
 
 ;;;; INTERNAL
 
+(defun make-handlers (name)
+  (if (get-module name)
+      (module-handlers (gethash name *known-modules*))
+      (make-hash-table)))
+
+(defun reload-module-deps (old-depends new-depends)
+  (when *current-bot*
+    (let ((remove-modules (set-stable-difference old-depends new-depends))
+          (add-modules (set-stable-difference new-depends old-depends)))
+      (when remove-modules
+        (v:info :dithcord "Removing no longer needed modules: ~A" remove-modules)
+        (mapcar (lambda (mod) (unload-module *current-bot* mod))
+                remove-modules))
+      (when add-modules
+        (v:info :dithcord "Adding new modules: ~A" add-modules)
+        (mapcar (lambda (mod) (load-module *current-bot* mod))
+                add-modules)))))
+
 (defun get-module (module-name)
-  (gethash module-name *known-modules*))
+  (gethash module-name *known-modules* nil))
 
 (defun load-module (bot module-name)
   ;; Skip loading module if it's already loaded

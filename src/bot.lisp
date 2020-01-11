@@ -9,10 +9,11 @@
 (defstruct bot
   (token nil)
   (selfbot nil)
+  (command-prefix nil)
   modules
   loaded-modules)
 
-(defmacro define-bot (name (&rest modules) &key token auth selfbot)
+(defmacro define-bot (name (&rest modules) &key token auth selfbot command-prefix)
   "Define a bot.
 NAME is only used for START-BOT and STOP-BOT.
 TOKEN is the bot's Discord token. Token is not updated on bot redefinition!
@@ -21,17 +22,19 @@ SELFBOT will make it introduce itself as a user account.
 MODULES is the list of module names required for this module. If
     modules depend on each other then they may be loaded in a
     different order."
-  (cond ((and token auth)
-         (error "Use one of AUTH or TOKEN"))
-        ((and auth (not selfbot))
-         (error "AUTH can only be used if you're making a selfbot"))
-        (token
-         `(ensure-bot ',name ,token ',modules ,selfbot))
-        ((and auth
-              (listp auth)
-              (= 2 (length auth)))
-         `(ensure-bot ',name (get-user-token ,@auth) ',modules ,selfbot))
-        (t `(ensure-bot ',name nil ',modules ,selfbot))))
+  (flet ((bot-ensurer (token)
+           `(ensure-bot ',name ,token ',modules ,selfbot ,command-prefix)))
+    (cond ((and token auth)
+           (error "Use one of AUTH or TOKEN"))
+          ((and auth (not selfbot))
+           (error "AUTH can only be used if you're making a selfbot"))
+          (token
+           (bot-ensurer token))
+          ((and auth
+                (listp auth)
+                (= 2 (length auth)))
+           (bot-ensurer (apply #'get-user-token auth)))
+          (t (bot-ensurer nil)))))
 
 (defun token (bot)
   (bot-token bot))
@@ -39,21 +42,25 @@ MODULES is the list of module names required for this module. If
 (defun (setf token) (new-val bot-name)
   (setf (bot-token (gethash bot-name *bots*)) new-val))
 
-(defun ensure-bot (name token modules selfbot)
+(defun ensure-bot (name token modules selfbot command-prefix)
   (if (and (gethash name *bots* nil)
            (eq (gethash name *bots*) *current-bot*))
-      (update-bot name modules selfbot)
-      (create-bot name token modules selfbot)))
+      (update-bot name modules selfbot command-prefix)
+      (create-bot name token modules selfbot command-prefix)))
 
-(defun create-bot (name token modules selfbot)
-  (let ((bot (make-bot :token token :modules modules :selfbot selfbot)))
+(defun create-bot (name token modules selfbot command-prefix)
+  (let ((bot (make-bot :token token
+                       :modules modules
+                       :selfbot selfbot
+                       :command-prefix command-prefix)))
         (setf (gethash name *bots*) bot)
         name))
 
-(defun update-bot (name modules selfbot)
+(defun update-bot (name modules selfbot command-prefix)
   (let ((bot (gethash name *bots*)))
     (setf (bot-selfbot bot) selfbot)
     (setf (bot-modules bot) modules)
+    (setf (bot-command-prefix bot) command-prefix)
     (let ((remove-modules (set-stable-difference (bot-loaded-modules bot) modules))
           (add-modules (set-stable-difference modules (bot-loaded-modules bot))))
       (when remove-modules

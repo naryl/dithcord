@@ -1,6 +1,6 @@
 
 (defsystem dithcord
-  :depends-on (:alexandria :drakma :flexi-streams
+  :depends-on (:alexandria :anaphora :drakma :flexi-streams
                :verbose :jonathan
                :lispcord)
   :pathname "src/"
@@ -12,4 +12,5 @@
                (:file "bot")
                (:file "handlers")
                (:file "module")
+               (:file "commands")
                ))
