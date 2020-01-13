@@ -1,5 +1,7 @@
 
 * MAIN LIBRARY
+Keeping modules ordered no matter what
+
 * Set bot's token after defining it
 * Unloading modules
 * Redefining a running bot should update loaded modules

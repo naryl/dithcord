@@ -4,7 +4,9 @@
 (defpackage dithcord.commands
   (:use :cl)
   (:export #:commands
-           #:define-command))
+           #:define-command
+           #:set-command-prefix
+           ))
 
 (uiop:define-package dithcord
   (:use :cl :anaphora

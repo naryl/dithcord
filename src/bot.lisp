@@ -9,11 +9,10 @@
 (defstruct bot
   (token nil)
   (selfbot nil)
-  (command-prefix nil)
   modules
   loaded-modules)
 
-(defmacro define-bot (name (&rest modules) &key token auth selfbot command-prefix)
+(defmacro define-bot (name (&rest modules) &key token auth selfbot)
   "Define a bot.
 NAME is only used for START-BOT and STOP-BOT.
 TOKEN is the bot's Discord token. Token is not updated on bot redefinition!
@@ -23,7 +22,7 @@ MODULES is the list of module names required for this module. If
     modules depend on each other then they may be loaded in a
     different order."
   (flet ((bot-ensurer (token)
-           `(ensure-bot ',name ,token ',modules ,selfbot ,command-prefix)))
+           `(ensure-bot ',name ,token ',modules ,selfbot)))
     (cond ((and token auth)
            (error "Use one of AUTH or TOKEN"))
           ((and auth (not selfbot))
@@ -42,25 +41,23 @@ MODULES is the list of module names required for this module. If
 (defun (setf token) (new-val bot-name)
   (setf (bot-token (gethash bot-name *bots*)) new-val))
 
-(defun ensure-bot (name token modules selfbot command-prefix)
+(defun ensure-bot (name token modules selfbot)
   (if (and (gethash name *bots* nil)
            (eq (gethash name *bots*) *current-bot*))
-      (update-bot name modules selfbot command-prefix)
-      (create-bot name token modules selfbot command-prefix)))
+      (update-bot name modules selfbot)
+      (create-bot name token modules selfbot)))
 
-(defun create-bot (name token modules selfbot command-prefix)
+(defun create-bot (name token modules selfbot)
   (let ((bot (make-bot :token token
                        :modules modules
-                       :selfbot selfbot
-                       :command-prefix command-prefix)))
+                       :selfbot selfbot)))
         (setf (gethash name *bots*) bot)
         name))
 
-(defun update-bot (name modules selfbot command-prefix)
+(defun update-bot (name modules selfbot)
   (let ((bot (gethash name *bots*)))
     (setf (bot-selfbot bot) selfbot)
     (setf (bot-modules bot) modules)
-    (setf (bot-command-prefix bot) command-prefix)
     (let ((remove-modules (set-stable-difference (bot-loaded-modules bot) modules))
           (add-modules (set-stable-difference modules (bot-loaded-modules bot))))
       (when remove-modules
