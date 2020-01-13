@@ -81,7 +81,7 @@ lisp-system."
            (unless (bot-token bot)
              (error "The bot has no token. Set it with (setf (token bot-name) ...)"))
            (setf lispcord:*client* (lispcord:make-bot (bot-token bot)
-                                                      :selfbot (bot-selfbot bot)))
+                                                      :bot (not (bot-selfbot bot))))
            (setf *current-bot* bot)
            (dolist (mod (bot-modules bot))
              (load-module bot mod))

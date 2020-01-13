@@ -30,7 +30,7 @@
     ;; A command
     (when (lispcord:commandp msg)
       ;; Remove mentions of me
-      (setf (msg (remove-mention msg)))
+      (setf msg (lispcord:remove-mention (lispcord:me) msg))
       (let* ((tokens (split-sequence:split-sequence #\Space (lc:content msg)))
              (command (make-key (if (eql (elt command 0) *command-prefix*)
                                     (subseq (first tokens) 1)
