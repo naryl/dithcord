@@ -12,5 +12,6 @@
                (:file "bot")
                (:file "handlers")
                (:file "module")
-               (:file "commands")
-               ))
+               (:module modules
+                :serial t
+                :components ((:file "commands")))))

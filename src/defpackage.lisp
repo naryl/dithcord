@@ -1,7 +1,7 @@
 
 (in-package cl-user)
 
-(defpackage dithcord.commands
+(defpackage dithcord.modules
   (:use :cl)
   (:export #:commands
            #:define-command
@@ -10,8 +10,8 @@
 
 (uiop:define-package dithcord
   (:use :cl :anaphora
-        :dithcord.commands)
-  (:reexport :dithcord.commands)
+        :dithcord.modules)
+  (:reexport :dithcord.modules)
   (:export #:define-bot #:start-bot #:stop-bot
            #:define-module #:module-slot
            #:define-handler

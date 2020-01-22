@@ -1,6 +1,8 @@
 
 (in-package dithcord-user)
 
+(setf (v:repl-level) :info)
+
 ;; Modules are not loaded until the bot is started
 (define-bot selfbot (echo)
   ;; Parameters are evaluated. You can load it from a config file e.g.

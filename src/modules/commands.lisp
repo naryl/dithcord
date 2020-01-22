@@ -1,5 +1,5 @@
 
-(in-package dithcord.commands)
+(in-package dithcord.modules)
 
 #.dithcord::declaim-optimize
 

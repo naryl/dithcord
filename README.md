@@ -11,10 +11,7 @@ Dithcord is what you may call a "non-automated bot". It's a bot mainly intended 
 Is it a self-bot?
 -----------------
 
-Self-bot is the opposite of what Dithcord is. Self-bot is an automated user account. Dithcord doesn't automate and doesn't use a user account. There's a way to make Dithcord introduce itself as a user account but
-
-1. You'll need my Lispcord fork for that.
-2. It's VERY likely to get your account banned.
+Self-bot is the opposite of what Dithcord is. Self-bot is an automated user account. Dithcord doesn't automate and doesn't use a user account. There's a way to make Dithcord introduce itself as a user account but it's VERY likely to get your account banned.
 
 So it's more like a 3rd-party Discord client?
 ---------------------------------------------
