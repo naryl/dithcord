@@ -14,4 +14,5 @@
                (:file "module")
                (:module modules
                 :serial t
-                :components ((:file "commands")))))
+                :components ((:file "commands")
+                             (:file "state-tracker")))))

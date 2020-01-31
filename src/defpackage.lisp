@@ -6,6 +6,10 @@
   (:export #:commands
            #:define-command
            #:set-command-prefix
+
+           #:state-tracker
+           #:guilds
+           #:channels
            ))
 
 (uiop:define-package dithcord
@@ -21,11 +25,14 @@
 
            ;; Selfbots
            #:get-user-token #:invalid-login-data #:message
+
+           #:mapf
            ))
+
+(uiop:define-package dithcord.pub
+    (:nicknames :dc)
+  (:use :cl :lispcord :dithcord :dithcord.modules)
+  (:reexport :lispcord :dithcord :dithcord.modules))
 
 ;; Used for Lispcord handlers
 (defpackage dithcord.handlers)
-
-(defpackage dithcord-user
-  ;; Use lispcord: and lc: to access Lispcord
-  (:use :cl :dithcord))
