@@ -41,6 +41,12 @@ MODULES is the list of module names required for this module. If
 (defun (setf token) (new-val bot-name)
   (setf (bot-token (gethash bot-name *bots*)) new-val))
 
+(defun selfbot (bot)
+  (bot-selfbot bot))
+
+(defun (setf selfbot) (new-val bot-name)
+  (setf (bot-selfbot (gethash bot-name *bots*)) new-val))
+
 (defun ensure-bot (name token modules selfbot)
   (if (and (gethash name *bots* nil)
            (eq (gethash name *bots*) *current-bot*))

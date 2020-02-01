@@ -22,6 +22,7 @@
 
            ;; accessors
            #:token
+           #:selfbot
 
            ;; Selfbots
            #:get-user-token #:invalid-login-data #:message
