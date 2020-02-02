@@ -12,7 +12,7 @@
   depends
   handlers)
 
-(defmacro define-module (name (&rest depends))
+(defmacro define-module (name (&rest depends) &key settings)
   "Define a module. Modules are strictly single-instance per
 lisp-system so you're free to use global variables to store
 module-specific data."

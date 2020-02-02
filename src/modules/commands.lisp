@@ -16,6 +16,8 @@
   (lispcord:make-prefix character))
 
 (defmacro define-command (module command (&rest args) &body body)
+  "Defines a command for for module. Several modules can have the same
+command but in this case several handlers will be called at the same time (if their modules are loaded and running)."
   (let ((key (make-key command)))
     (unless (gethash key *commands* nil)
       (setf (gethash key *commands*) (make-hash-table)))

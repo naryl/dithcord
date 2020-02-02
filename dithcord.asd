@@ -1,7 +1,7 @@
 
 (defsystem dithcord
   :depends-on (:alexandria :anaphora :drakma :flexi-streams
-               :verbose :jonathan
+               :verbose :jonathan :ubiquitous
                :lispcord)
   :pathname "src/"
   :serial t
@@ -15,4 +15,6 @@
                (:module modules
                 :serial t
                 :components ((:file "commands")
-                             (:file "state-tracker")))))
+                             (:file "state-tracker")
+                             (:file "client")
+                             ))))

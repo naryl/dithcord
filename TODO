@@ -1,6 +1,7 @@
 
 * MAIN LIBRARY
 Keeping modules ordered no matter what
+Separate prefixes for different servers and modules.
 
 * Set bot's token after defining it
 * Unloading modules
